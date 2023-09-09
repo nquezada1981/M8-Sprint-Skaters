@@ -10,24 +10,39 @@ export class Skater {
         this.especialidad;
         this.foto;
         this.estado;
+        this.rol;
     }
 
 
     async newSkater(email, nombre, password, yearsExperiencia, especialidad, foto) {
-        console.log(email, nombre, password, yearsExperiencia, especialidad, foto);
+        //console.log(email, nombre, password, yearsExperiencia, especialidad, foto);
         await pool.query(`INSERT INTO skaters (email, nombre, password, anos_experiencia, especialidad, foto) VALUES ($1, $2, $3, $4, $5, $6)`, [ email, nombre, password, yearsExperiencia, especialidad, foto]);
         
     }
 
-    async getSkater(nombre, password) {
-        const skater = await pool.query(`SELECT COUNT(1) FROM skaters WHERE nombre = $1 AND password = $2`, [nombre, password]);
-        return skater.rows[0].count;
+    async getSkater(email, password) {
+        const skater = await pool.query(`SELECT email, nombre, anos_experiencia, especialidad, foto , rol FROM skaters WHERE email = $1 AND password = $2`, [email, password]);
+        
+        return skater.rows;
     }
 
     async getskaters() {
-        const result = await pool.query(`SELECT nombre, anos_experiencia, especialidad, foto, estado FROM skaters`);
+        const result = await pool.query(`SELECT  nombre, anos_experiencia, especialidad, foto, estado FROM skaters WHERE id > 0`);
         return result.rows
     }
+    async validuser(email,password){
+        const uservalid = await pool.query(`
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS usuario_existe
+        FROM skaters
+        WHERE email = $1 AND password = $2`, [email, password]);
+        //console.log(typeof(uservalid) );
+        //console.log(uservalid);
+        console.log(uservalid.rows[0].usuario_existe);
 
-
-}    
+        if (uservalid.rows[0].usuario_existe == 1) {
+            return true;
+        } else {
+            return false;
+        };
+    }
+}

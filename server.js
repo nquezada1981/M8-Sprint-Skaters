@@ -4,11 +4,14 @@ import {dirname} from 'path';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import {Skater} from './Skater.js';
+import axios from 'axios';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const skater = new Skater();
+const secret = "springM8"
+let skaters = await skater.getskaters();
 
 app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
@@ -19,7 +22,7 @@ hbs.registerPartials(__dirname + '/views/partials');
 
 app.get('/', async (req, res) => {
     try{
-        const skaters = await skater.getskaters();
+        
         res.render('index', { skaters });
     }
     catch{
@@ -45,10 +48,23 @@ app.get ('/datos', (req, res) => {
 
 app.post('/login', async (req, res) => {
 //    admin validado then
-    res.render('index');
-//    usuario skater validado then
-    // res.render('index');
+let user = req.body; //email, pasword
+//console.log(user);
 
+try {
+    //console.log(await skater.validuser(user.email,user.password));
+    if(await skater.validuser(user.email,user.password)){
+    const selectskater =  await skater.getSkater(user.email,user.password)  
+    console.log(selectskater);  
+    const token = jwt.sign(selectskater[0],secret,{expiresIn:"3m"})
+    res.redirect(`/?token=${token}`);
+    } else {
+        res.status(400).redirect('/login');
+    }
+
+} catch (error) { 
+    console.log(error);   
+}
   });
 
 app.post('/registro', async (req, res) => {
@@ -56,7 +72,7 @@ app.post('/registro', async (req, res) => {
     try{
         console.log(req.body);
         await skater.newSkater(req.body.email, req.body.nombre, req.body.password, req.body.years, req.body.especialidad, req.body.foto);
-        res.status(200).redirect('/registro');
+        res.status(200).redirect('/');
     }
     catch{
         res.status(400).redirect('/registro');
