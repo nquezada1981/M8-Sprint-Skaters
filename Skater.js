@@ -15,13 +15,20 @@ export class Skater {
 
 
     async newSkater(email, nombre, password, yearsExperiencia, especialidad, foto) {
-        //console.log(email, nombre, password, yearsExperiencia, especialidad, foto);
-        await pool.query(`INSERT INTO skaters (email, nombre, password, anos_experiencia, especialidad, foto) VALUES ($1, $2, $3, $4, $5, $6)`, [ email, nombre, password, yearsExperiencia, especialidad, foto]);
+        // console.log(email, nombre, password, yearsExperiencia, especialidad, foto);
+        // console.log(`INSERT INTO skaters (email, nombre, password, anos_experiencia, especialidad, foto) VALUES ($1, $2, $3, $4, $5, $6)`, [ email, nombre, password, yearsExperiencia, especialidad, foto]);
+        try {
+            await pool.query(`INSERT INTO skaters (email, nombre, password, anos_experiencia, especialidad, foto) VALUES ($1, $2, $3, $4, $5, $6)`, [ email, nombre, password, yearsExperiencia, especialidad, foto]);
+            console.log("funciono");
+        } catch (error) {
+            console.log(error);
+        }
+        
         
     }
 
     async getSkater(email, password) {
-        const skater = await pool.query(`SELECT email, nombre, anos_experiencia, especialidad, foto , rol FROM skaters WHERE email = $1 AND password = $2`, [email, password]);
+        const skater = await pool.query(`SELECT email, nombre, anos_experiencia, especialidad, foto , rol, admin FROM skaters WHERE email = $1 AND password = $2`, [email, password]);
         
         return skater.rows;
     }
@@ -45,4 +52,5 @@ export class Skater {
             return false;
         };
     }
-}
+   
+}   

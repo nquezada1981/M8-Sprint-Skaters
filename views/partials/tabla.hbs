@@ -13,11 +13,17 @@
             {{#each skaters}}
           <tr>
             <th scope="row">1</th>
-            <td><div></div></td>
+            <td><div style="background-image: url('/img/{{foto}}');"></div></td>
             <td>{{nombre}}</td>
             <td>{{anos_experiencia}}</td>
             <td>{{especialidad}}</td>
-            <td class="text-success font-weight-bold">{{estado}}</td>
+              {{!-- condicional si es true o false el estado --}}
+              {{#if estado}}
+                <td class="text-success font-weight-bold">Aprobado</td>
+              {{else}}
+                <td class="text-warning font-weight-bold">En revisión</td>
+              {{/if}}
+           
           </tr>
             {{/each}}
         </tbody>
