@@ -52,5 +52,13 @@ export class Skater {
             return false;
         };
     }
+    
+    async updateSkater(email, nombre, password, yearsExperiencia, especialidad, foto) {
+        await pool.query(`UPDATE skaters SET nombre = $1, password = $2, anos_experiencia = $3, especialidad = $4, foto = $5 WHERE email = $6`, [nombre, password, yearsExperiencia, especialidad, foto, email]);
+    }
+
+    async updateEstado(email, estado) {
+        await pool.query(`UPDATE skaters SET estado = $2 WHERE email = $1`, [email, estado]);
+    }
    
 }   

@@ -18,6 +18,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 hbs.registerPartials(__dirname + '/views/partials');
+
 app.get('/', async (req, res) => {
   
         const token = req.query.token;
@@ -55,7 +56,7 @@ app.get ('/admin', (req, res) => {
             // si esta bueno toma el valor admin(booleano) y consulta si es true
             let admin = decoded.admin;
             if (admin) {
-                res.render('admin'); // si es true significa que el usuario tiene el rol de admin asique renderiza admin.hbs
+                res.render('admin',{skaters}); // si es true significa que el usuario tiene el rol de admin asique renderiza admin.hbs
             }else{
                 res.redirect(`/?token=${token}`); // de lo contrario si el usuario no es admin devuelve a la raiz y redirige el token
             }
@@ -83,7 +84,7 @@ app.get ('/datos', (req, res) => {
                 let especialidad =decoded.especialidad
                 let foto =decoded.foto
 
-                res.render('datos',{email,nombre,anos_experiencia,especialidad,foto});
+                res.render('datos',{email,nombre,anos_experiencia,especialidad,foto,skaters});
             }
         }
     });
@@ -123,6 +124,16 @@ app.post('/registro', async (req, res) => {
  
 });
 
+app.post('/admin', async (req, res) => {
+    const user = req.body;
+    console.log(user);
+    try{
+        await skater.updateEstado(user.email, user.estado);
+        res.redirect('/admin');
+    }catch{
+        res.status(400).redirect('/admin');
+    }
+})
 
 
 app.listen(3000, () => {
